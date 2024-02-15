@@ -71,8 +71,8 @@ Replace <customer_id>, <product_id_1>, <quantity_1>, <product_id_2>, and <quanti
 
 Set the following headers:
 
-Accept: application/vnd.api+json
-Content-Type: application/vnd.api+json
+- `Accept`: `application/vnd.api+json`
+- `Content-Type`: `application/vnd.api+json`
 
 
 ## ER Diagram and Model Relations
