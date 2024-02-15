@@ -1,5 +1,9 @@
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
+# Packiyo
+
+This project is built with Laravel version 10.43.0, PHP version 8.3.2, and uses the "laravel-json-api/laravel" package version ^3.2.
+
 ## Setup Instructions
 
 1. Ensure Docker is installed. Run `docker -v` to check.
