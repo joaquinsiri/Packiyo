@@ -1,66 +1,113 @@
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Setup Instructions
 
-## About Laravel
+1. Ensure Docker is installed. Run `docker -v` to check.
+2. Clone this repository: `git clone https://github.com/joaquinsiri/Packiyo.git`.
+3. Navigate to the project directory: `cd Packiyo`.
+4. Install Laravel dependencies: `./vendor/bin/sail composer install`.
+5. Copy `.env.example` to `.env`.
+6. Start the Laravel Sail Docker environment: `./vendor/bin/sail up`.
+7. Generate app key: `./vendor/bin/sail artisan key:generate`.
+8. Run the database migrations: `./vendor/bin/sail artisan migrate`.
+9. Seed the database: `./vendor/bin/sail artisan db:seed`.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+After following these steps, the application should be accessible at http://localhost.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## API Endpoints
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Retrieve an Order
 
-## Learning Laravel
+GET http://localhost/api/v1/orders/{orderId}
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+You can include related entities in the response by adding the `include` query parameter. For example, to include the customer, line items, product, and inventory for an order, use:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+http://localhost/api/v1/orders/115?include=customer,lineItems.product,lineItems.product.inventory
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Set the following header:
 
-## Laravel Sponsors
+- `Accept`: `application/vnd.api+json`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Create an Order
 
-### Premium Partners
+POST http://localhost/api/v1/orders
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Use the following example for the raw JSON request body:
 
-## Contributing
+```json
+{
+    "data": {
+        "type": "orders",
+        "relationships": {
+            "customer": {
+                "data": {
+                    "type": "customers",
+                    "id": "<customer_id>"
+                }
+            },
+            "lineItems": {
+                "data": [
+                    {
+                        "type": "line-items",
+                        "attributes": {
+                            "product_id": "<product_id_1>",
+                            "quantity": "<quantity_1>"
+                        }
+                    },
+                    {
+                        "type": "line-items",
+                        "attributes": {
+                            "product_id": "<product_id_2>",
+                            "quantity": "<quantity_2>"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+Replace <customer_id>, <product_id_1>, <quantity_1>, <product_id_2>, and <quantity_2> with the actual values you want to use for the order.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Set the following headers:
 
-## Code of Conduct
+Accept: application/vnd.api+json
+Content-Type: application/vnd.api+json
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-## Security Vulnerabilities
+## ER Diagram and Model Relations
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```
+Customer 1..* Order 1..* LineItem *..1 Product 1..1 Inventory
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
++----------------+     +----------------+     +----------------+
+|   Customer     |     |     Order      |     |   LineItem    |
++----------------+     +----------------+     +----------------+
+| - id           | 1  *| - id           |*   *| - id          |
+| - name         |-----| - customer_id  |-----| - order_id    |
++----------------+     | - created_at   |     | - product_id  |
+                       | - updated_at   |     | - quantity    |
+                       +----------------+     +----------------+
+                                                           |
+                                                           |1
+                                                           |
+                                                           |*
+                                               +----------------+
+                                               |   Product      |
+                                               +----------------+
+                                               | - id           |
+                                               | - name         |
+                                               | - price        |
+                                               +----------------+
+                                                           |
+                                                           |1
+                                                           |
+                                                           |1
+                                               +----------------+
+                                               |   Inventory    |
+                                               +----------------+
+                                               | - id           |
+                                               | - product_id   |
+                                               | - quantity     |
+                                               | - allocated_quantity |
+                                               +----------------+
