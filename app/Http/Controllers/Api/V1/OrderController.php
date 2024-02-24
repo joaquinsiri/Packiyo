@@ -15,6 +15,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use LaravelJsonApi\Core\Resources\JsonApiResource;
 use LaravelJsonApi\Core\Support\AppResolver;
+use App\Http\Requests\StoreOrderRequest;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -37,24 +39,9 @@ class OrderController extends Controller
         $this->orderService = $orderService;
     }
 
-    public function store(Request $request)
+    public function store(StoreOrderRequest $request)
     {
-        $validatedData = $request->validate([
-            'data.type' => 'required|in:orders',
-            'data.relationships.customer.data.id' => 'required|exists:customers,id',
-            'data.relationships.lineItems.data.*.type' => 'required|in:line-items',
-            'data.relationships.lineItems.data.*.attributes.product_id' => [
-                'required',
-                'exists:products,id',
-                function ($attribute, $value, $fail) {
-                    if (!Inventory::where('product_id', $value)->exists()) {
-                        $fail('The product with id ' . $value . ' does not exist in the inventory.');
-                    }
-                },
-            ],
-            'data.relationships.lineItems.data.*.attributes.quantity' => 'required|integer|min:1',
-        ]);
-
+        $validatedData = $request->validated();
         try {
             $order = $this->orderService->createOrder($validatedData);
 

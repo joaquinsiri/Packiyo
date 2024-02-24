@@ -19,24 +19,24 @@ class Order extends Model
         'updated_at' => 'datetime',
     ];
 
-    public function customer() : BelongsTo
+    public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
     }
 
-    public function lineItems() : HasMany
+    public function lineItems(): HasMany
     {
         return $this->hasMany(LineItem::class);
-    } 
+    }
 
     public function getReadyToShipAttribute()
     {
         foreach ($this->lineItems as $lineItem) {
             $inventory = $lineItem->product->inventory;
-    
+
             if ($inventory) {
                 $availableQuantity = $inventory->quantity - $inventory->allocated_quantity;
-    
+
                 if ($lineItem->quantity > $availableQuantity) {
                     return false;
                 }
@@ -44,7 +44,7 @@ class Order extends Model
                 throw new \Exception('Inventory not found for product ' . $lineItem->product_id);
             }
         }
-    
+
         return true;
     }
 }
