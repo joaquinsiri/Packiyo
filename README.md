@@ -79,6 +79,15 @@ Set the following headers:
 - `Content-Type`: `application/vnd.api+json`
 
 
+## Running Tests
+
+This project uses Behat for testing. To run the tests, use the following command:
+
+```bash
+sail bash -c "vendor/bin/behat"
+```
+
+
 ## ER Diagram and Model Relations
 
 ```
