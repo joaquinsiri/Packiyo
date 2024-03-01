@@ -9,12 +9,13 @@ This project is built with Laravel version 10.43.0, PHP version 8.3.2, and uses 
 1. Ensure Docker is installed. Run `docker -v` to check.
 2. Clone this repository: `git clone https://github.com/joaquinsiri/Packiyo.git`.
 3. Navigate to the project directory: `cd Packiyo`.
-4. Install Laravel dependencies: `./vendor/bin/sail composer install`.
-5. Copy `.env.example` to `.env`.
+4. Install Laravel dependencies: `docker run --rm -v $(pwd):/app composer install`.
+5. Copy `.env.example` to `.env` and set `DB_HOST=mysql` in the .env file.
 6. Start the Laravel Sail Docker environment: `./vendor/bin/sail up`.
-7. Generate app key: `./vendor/bin/sail artisan key:generate`.
-8. Run the database migrations: `./vendor/bin/sail artisan migrate`.
-9. Seed the database: `./vendor/bin/sail artisan db:seed`.
+7. In your db management tool, ensure `allowPublicKeyRetrieval` is set to `true` for the database connection.
+8. Generate app key: `./vendor/bin/sail artisan key:generate`.
+9. Run the database migrations: `./vendor/bin/sail artisan migrate`.
+10. Seed the database: `./vendor/bin/sail artisan db:seed`.
 
 After following these steps, the application should be accessible at http://localhost.
 
